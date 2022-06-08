@@ -212,7 +212,7 @@ impl fmt::Display for Stop {
 }
 
 /// A [StopTime] where the relations with [Trip] and [Stop] have not been tested
-#[derive(Debug, Serialize, Deserialize, Default)]
+#[derive(Clone, Debug, Serialize, Deserialize, Default)]
 pub struct RawStopTime {
     /// [Trip] to which this stop time belongs to
     pub trip_id: String,
@@ -308,7 +308,7 @@ impl StopTime {
 }
 
 /// A route is a commercial line (there can be various stop sequences for a same line). See <https://gtfs.org/reference/static/#routestxt>
-#[derive(Debug, Serialize, Deserialize, Default)]
+#[derive(Clone, Debug, Serialize, Deserialize, Default)]
 pub struct Route {
     /// Unique technical (not for the traveller) identifier for the route
     #[serde(rename = "route_id")]
@@ -480,7 +480,7 @@ impl fmt::Display for Trip {
 }
 
 /// General informations about the agency running the network. See <https://gtfs.org/reference/static/#agencytxt>
-#[derive(Debug, Serialize, Deserialize, Default)]
+#[derive(Clone, Debug, Serialize, Deserialize, Default)]
 pub struct Agency {
     /// Unique technical (not for the traveller) identifier for the Agency
     #[serde(rename = "agency_id")]
