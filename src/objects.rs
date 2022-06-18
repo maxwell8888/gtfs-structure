@@ -379,7 +379,7 @@ impl fmt::Display for Route {
 }
 
 /// A [Trip] where the relationships with other objects have not been checked
-#[derive(Debug, Serialize, Deserialize, Default)]
+#[derive(Clone, Debug, Serialize, Deserialize, Default)]
 pub struct RawTrip {
     /// Unique technical (not for the traveller) identifier for the Trip
     #[serde(rename = "trip_id")]
