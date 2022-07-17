@@ -1,3 +1,4 @@
+use deepsize::DeepSizeOf;
 use serde::de::{Deserialize, Deserializer};
 use serde::ser::{Serialize, Serializer};
 
@@ -21,7 +22,7 @@ pub enum ObjectType {
 }
 
 /// Describes the kind of [Stop]. See <https://gtfs.org/reference/static/#stopstxt> `location_type`
-#[derive(Derivative, Debug, Copy, Clone, PartialEq)]
+#[derive(Derivative, Debug, Copy, Clone, PartialEq, Eq, DeepSizeOf)]
 #[derivative(Default(bound = ""))]
 pub enum LocationType {
     /// Stop (or Platform). A location where passengers board or disembark from a transit vehicle. Is called a platform when defined within a parent_station
@@ -81,7 +82,7 @@ impl Serialize for LocationType {
 /// Describes the kind of [Route]. See <https://gtfs.org/reference/static/#routestxt> `route_type`
 ///
 /// -ome route types are extended GTFS (<https://developers.google.com/transit/gtfs/reference/extended-route-types)>
-#[derive(Debug, Derivative, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Derivative, Copy, Clone, PartialEq, Eq, Hash, DeepSizeOf)]
 #[derivative(Default(bound = ""))]
 pub enum RouteType {
     /// Tram, Streetcar, Light rail. Any light rail or street level system within a metropolitan area
@@ -160,7 +161,7 @@ impl Serialize for RouteType {
 }
 
 /// Describes if and how a traveller can board or alight the vehicle. See <https://gtfs.org/reference/static/#stop_timestxt> `pickup_type` and `dropoff_type`
-#[derive(Debug, Derivative, Copy, Clone, PartialEq)]
+#[derive(Debug, Derivative, Copy, Clone, PartialEq, Eq, DeepSizeOf)]
 #[derivative(Default(bound = ""))]
 pub enum PickupDropOffType {
     /// Regularly scheduled pickup or drop off (default when empty).
@@ -216,7 +217,7 @@ impl Serialize for PickupDropOffType {
 /// Indicates whether a rider can board the transit vehicle anywhere along the vehicle’s travel path
 ///
 /// Those values are only defined on <https://developers.google.com/transit/gtfs/reference#routestxt,> not on <https://gtfs.org/reference/static/#routestxt>
-#[derive(Debug, Derivative, Copy, Clone, PartialEq)]
+#[derive(Debug, Derivative, Copy, Clone, PartialEq, DeepSizeOf)]
 #[derivative(Default(bound = ""))]
 pub enum ContinuousPickupDropOff {
     /// Continuous stopping pickup or drop off.
@@ -270,7 +271,7 @@ impl<'de> Deserialize<'de> for ContinuousPickupDropOff {
 }
 
 /// Describes if the stop time is exact or not. See <https://gtfs.org/reference/static/#stop_timestxt> `timepoint`
-#[derive(Debug, Derivative, Serialize, Copy, Clone, PartialEq)]
+#[derive(Debug, Derivative, Serialize, Copy, Clone, PartialEq, Eq, DeepSizeOf)]
 #[derivative(Default)]
 pub enum TimepointType {
     /// Times are considered approximate
@@ -298,7 +299,7 @@ impl<'de> Deserialize<'de> for TimepointType {
 }
 
 /// Generic enum to define if a service (like wheelchair boarding) is available
-#[derive(Debug, Derivative, PartialEq, Eq, Hash, Clone, Copy)]
+#[derive(Debug, Derivative, PartialEq, Eq, Hash, Clone, Copy, DeepSizeOf)]
 #[derivative(Default)]
 pub enum Availability {
     /// No information if the service is available
@@ -359,7 +360,7 @@ pub enum Exception {
 }
 
 /// Defines the direction of a [Trip], only for display, not for routing. See <https://gtfs.org/reference/static/#tripstxt> `direction_id`
-#[derive(Debug, Deserialize, Serialize, Copy, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Copy, Clone, PartialEq, Eq, DeepSizeOf)]
 pub enum DirectionType {
     /// Travel in one direction (e.g. outbound travel).
     #[serde(rename = "0")]
@@ -370,7 +371,7 @@ pub enum DirectionType {
 }
 
 /// Is the [Trip] accessible with a bike. See <https://gtfs.org/reference/static/#tripstxt> `bikes_allowed`
-#[derive(Debug, Derivative, Copy, Clone, PartialEq)]
+#[derive(Debug, Derivative, Copy, Clone, PartialEq, Eq, DeepSizeOf)]
 #[derivative(Default())]
 pub enum BikesAllowedType {
     /// No bike information for the trip
@@ -506,7 +507,7 @@ impl Serialize for Transfers {
     }
 }
 /// Defines the type of a [StopTransfer]
-#[derive(Debug, Serialize, Deserialize, Derivative, Copy, Clone, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, Derivative, Copy, Clone, PartialEq, DeepSizeOf)]
 #[derivative(Default)]
 pub enum TransferType {
     /// Recommended transfer point between routes
@@ -525,7 +526,7 @@ pub enum TransferType {
 }
 
 /// Type of pathway between [from_stop] and [to_stop]
-#[derive(Debug, Serialize, Deserialize, Derivative, Copy, Clone, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, Derivative, Copy, Clone, PartialEq, DeepSizeOf)]
 #[derivative(Default)]
 pub enum PathwayMode {
     /// A walkway
@@ -555,7 +556,7 @@ pub enum PathwayMode {
 }
 
 /// Indicates in which direction the pathway can be used
-#[derive(Debug, Serialize, Deserialize, Derivative, Copy, Clone, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, Derivative, Copy, Clone, PartialEq, DeepSizeOf)]
 #[derivative(Default)]
 pub enum PathwayDirectionType {
     /// Unidirectional pathway, it can only be used from [from_stop_id] to [to_stop_id].

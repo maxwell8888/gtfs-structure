@@ -1,6 +1,7 @@
 pub use crate::enums::*;
 use crate::serde_helpers::*;
 use chrono::{Datelike, NaiveDate, Weekday};
+use deepsize::DeepSizeOf;
 use rgb::RGB8;
 
 use std::fmt;
@@ -33,7 +34,7 @@ impl<T: Type> Type for Arc<T> {
 }
 
 /// A calender describes on which days the vehicle runs. See <https://gtfs.org/reference/static/#calendartxt>
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Calendar {
     /// Unique technical identifier (not for the traveller) of this calendar
     #[serde(rename = "service_id")]
@@ -143,7 +144,7 @@ pub struct CalendarDate {
 }
 
 /// A physical stop, station or area. See <https://gtfs.org/reference/static/#stopstxt>
-#[derive(Debug, Serialize, Deserialize, Clone, Default)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default, DeepSizeOf)]
 pub struct Stop {
     /// Unique technical identifier (not for the traveller) of the stop
     #[serde(rename = "stop_id")]
@@ -212,7 +213,7 @@ impl fmt::Display for Stop {
 }
 
 /// A [StopTime] where the relations with [Trip] and [Stop] have not been tested
-#[derive(Clone, Debug, Serialize, Deserialize, Default)]
+#[derive(Clone, Debug, Serialize, Deserialize, Default, DeepSizeOf)]
 pub struct RawStopTime {
     /// [Trip] to which this stop time belongs to
     pub trip_id: String,
@@ -308,7 +309,7 @@ impl StopTime {
 }
 
 /// A route is a commercial line (there can be various stop sequences for a same line). See <https://gtfs.org/reference/static/#routestxt>
-#[derive(Clone, Debug, Serialize, Deserialize, Default)]
+#[derive(Clone, Debug, Serialize, Deserialize, Default, DeepSizeOf)]
 pub struct Route {
     /// Unique technical (not for the traveller) identifier for the route
     #[serde(rename = "route_id")]
@@ -379,7 +380,7 @@ impl fmt::Display for Route {
 }
 
 /// A [Trip] where the relationships with other objects have not been checked
-#[derive(Clone, Debug, Serialize, Deserialize, Default)]
+#[derive(Clone, Debug, Serialize, Deserialize, Default, DeepSizeOf)]
 pub struct RawTrip {
     /// Unique technical (not for the traveller) identifier for the Trip
     #[serde(rename = "trip_id")]
@@ -480,7 +481,7 @@ impl fmt::Display for Trip {
 }
 
 /// General informations about the agency running the network. See <https://gtfs.org/reference/static/#agencytxt>
-#[derive(Clone, Debug, Serialize, Deserialize, Default)]
+#[derive(Clone, Debug, Serialize, Deserialize, Default, DeepSizeOf)]
 pub struct Agency {
     /// Unique technical (not for the traveller) identifier for the Agency
     #[serde(rename = "agency_id")]
@@ -655,7 +656,7 @@ pub struct RawTransfer {
     pub min_transfer_time: Option<u32>,
 }
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default, Clone, DeepSizeOf)]
 /// Transfer information between stops
 pub struct StopTransfer {
     /// Stop which to transfer to
@@ -756,7 +757,7 @@ pub struct RawPathway {
 }
 
 /// Pathway going from a stop to another.
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize, DeepSizeOf)]
 pub struct Pathway {
     /// Uniquely identifies the pathway
     pub id: String,

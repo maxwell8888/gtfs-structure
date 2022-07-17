@@ -12,6 +12,8 @@ default = ["read-url"]
 read-url = ["reqwest", "futures"]
 
 [dependencies]
+# deepsize = "0.2.0"
+deepsize = { path = "../deepsize" }
 bytes = "1"
 csv = "1.1"
 derivative = "2.1"
@@ -22,7 +24,10 @@ itertools = "0.10"
 sha2 = "0.10"
 zip = "0.5"
 thiserror = "1"
-rgb = "0.8"
+# rgb = "0.8"
+rgb = { path = "../rust-rgb" }
 
 futures = { version = "0.3", optional = true }
 reqwest = { version = "0.11", optional = true, features = ["blocking"]}
+
+# druid = { git = "https://github.com/linebender/druid", features = ["im", "image", "png"] }
