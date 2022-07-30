@@ -21,7 +21,7 @@ pub enum ObjectType {
 }
 
 /// Describes the kind of [Stop]. See <https://gtfs.org/reference/static/#stopstxt> `location_type`
-#[derive(Derivative, Debug, Copy, Clone, PartialEq)]
+#[derive(Derivative, Debug, Copy, Clone, PartialEq, Eq)]
 #[derivative(Default(bound = ""))]
 pub enum LocationType {
     /// Stop (or Platform). A location where passengers board or disembark from a transit vehicle. Is called a platform when defined within a parent_station
@@ -160,7 +160,7 @@ impl Serialize for RouteType {
 }
 
 /// Describes if and how a traveller can board or alight the vehicle. See <https://gtfs.org/reference/static/#stop_timestxt> `pickup_type` and `dropoff_type`
-#[derive(Debug, Derivative, Copy, Clone, PartialEq)]
+#[derive(Debug, Derivative, Copy, Clone, PartialEq, Eq)]
 #[derivative(Default(bound = ""))]
 pub enum PickupDropOffType {
     /// Regularly scheduled pickup or drop off (default when empty).
@@ -270,7 +270,7 @@ impl<'de> Deserialize<'de> for ContinuousPickupDropOff {
 }
 
 /// Describes if the stop time is exact or not. See <https://gtfs.org/reference/static/#stop_timestxt> `timepoint`
-#[derive(Debug, Derivative, Serialize, Copy, Clone, PartialEq)]
+#[derive(Debug, Derivative, Serialize, Copy, Clone, PartialEq, Eq)]
 #[derivative(Default)]
 pub enum TimepointType {
     /// Times are considered approximate
@@ -359,7 +359,7 @@ pub enum Exception {
 }
 
 /// Defines the direction of a [Trip], only for display, not for routing. See <https://gtfs.org/reference/static/#tripstxt> `direction_id`
-#[derive(Debug, Deserialize, Serialize, Copy, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Copy, Clone, PartialEq, Eq)]
 pub enum DirectionType {
     /// Travel in one direction (e.g. outbound travel).
     #[serde(rename = "0")]
@@ -370,7 +370,7 @@ pub enum DirectionType {
 }
 
 /// Is the [Trip] accessible with a bike. See <https://gtfs.org/reference/static/#tripstxt> `bikes_allowed`
-#[derive(Debug, Derivative, Copy, Clone, PartialEq)]
+#[derive(Debug, Derivative, Copy, Clone, PartialEq, Eq)]
 #[derivative(Default())]
 pub enum BikesAllowedType {
     /// No bike information for the trip
