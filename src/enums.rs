@@ -1,5 +1,6 @@
 use serde::de::{Deserialize, Deserializer};
 use serde::ser::{Serialize, Serializer};
+use serde_repr::*;
 
 /// All the objects type from the GTFS specification that this library reads
 #[derive(Debug, Serialize, Eq, PartialEq, Hash)]
@@ -44,19 +45,21 @@ impl<'de> Deserialize<'de> for LocationType {
     where
         D: Deserializer<'de>,
     {
-        let s: String = String::deserialize(deserializer)?;
-        Ok(match s.as_str() {
-            "" | "0" => LocationType::StopPoint,
-            "1" => LocationType::StopArea,
-            "2" => LocationType::StationEntrance,
-            "3" => LocationType::GenericNode,
-            "4" => LocationType::BoardingArea,
-            s => LocationType::Unknown(s.parse().map_err(|_| {
-                serde::de::Error::custom(format!(
-                    "invalid value for LocationType, must be an integer: {}",
-                    s
-                ))
-            })?),
+        // TODO support below error message
+        // s.parse().map_err(|_| {
+        //     serde::de::Error::custom(format!(
+        //         "invalid value for LocationType, must be an integer: {}",
+        //         s
+        //     ))
+        // })?
+        let oi: Option<i32> = Option::<i32>::deserialize(deserializer)?;
+        Ok(match oi {
+            Some(0) | None => LocationType::StopPoint,
+            Some(1) => LocationType::StopArea,
+            Some(2) => LocationType::StationEntrance,
+            Some(3) => LocationType::GenericNode,
+            Some(4) => LocationType::BoardingArea,
+            Some(i) => LocationType::Unknown(i),
         })
     }
 }
@@ -181,18 +184,13 @@ impl<'de> Deserialize<'de> for PickupDropOffType {
     where
         D: Deserializer<'de>,
     {
-        let s: String = String::deserialize(deserializer)?;
-        Ok(match s.as_str() {
-            "" | "0" => PickupDropOffType::Regular,
-            "1" => PickupDropOffType::NotAvailable,
-            "2" => PickupDropOffType::ArrangeByPhone,
-            "3" => PickupDropOffType::CoordinateWithDriver,
-            s => PickupDropOffType::Unknown(s.parse().map_err(|_| {
-                serde::de::Error::custom(format!(
-                    "invalid value for PickupDropOffType, must be an integer: {}",
-                    s
-                ))
-            })?),
+        let oi: Option<i32> = Option::<i32>::deserialize(deserializer)?;
+        Ok(match oi {
+            Some(0) | None => PickupDropOffType::Regular,
+            Some(1) => PickupDropOffType::NotAvailable,
+            Some(2) => PickupDropOffType::ArrangeByPhone,
+            Some(3) => PickupDropOffType::CoordinateWithDriver,
+            Some(i) => PickupDropOffType::Unknown(i),
         })
     }
 }
@@ -253,25 +251,23 @@ impl<'de> Deserialize<'de> for ContinuousPickupDropOff {
     where
         D: Deserializer<'de>,
     {
-        let s: String = String::deserialize(deserializer)?;
-        Ok(match s.as_str() {
-            "0" => ContinuousPickupDropOff::Continuous,
-            "" | "1" => ContinuousPickupDropOff::NotAvailable,
-            "2" => ContinuousPickupDropOff::ArrangeByPhone,
-            "3" => ContinuousPickupDropOff::CoordinateWithDriver,
-            s => ContinuousPickupDropOff::Unknown(s.parse().map_err(|_| {
-                serde::de::Error::custom(format!(
-                    "invalid value for ContinuousPickupDropOff, must be an integer: {}",
-                    s
-                ))
-            })?),
+        let oi: Option<i32> = Option::<i32>::deserialize(deserializer)?;
+        Ok(match oi {
+            Some(0) => ContinuousPickupDropOff::Continuous,
+            Some(1) | None => ContinuousPickupDropOff::NotAvailable,
+            Some(2) => ContinuousPickupDropOff::ArrangeByPhone,
+            Some(3) => ContinuousPickupDropOff::CoordinateWithDriver,
+            Some(i) => ContinuousPickupDropOff::Unknown(i),
         })
     }
 }
 
 /// Describes if the stop time is exact or not. See <https://gtfs.org/reference/static/#stop_timestxt> `timepoint`
-#[derive(Debug, Derivative, Serialize, Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Derivative, Deserialize, Serialize, Copy, Clone, PartialEq, Eq)]
 #[derivative(Default)]
+// #[derive(Debug, Derivative, Serialize_repr, Deserialize_repr, Copy, Clone, PartialEq, Eq)]
+// #[repr(u8)]
+// #[derivative(Default)]
 pub enum TimepointType {
     /// Times are considered approximate
     Approximate = 0,
@@ -280,22 +276,23 @@ pub enum TimepointType {
     Exact = 1,
 }
 
-impl<'de> Deserialize<'de> for TimepointType {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        let s: String = String::deserialize(deserializer)?;
-        match s.as_str() {
-            "" | "1" => Ok(Self::Exact),
-            "0" => Ok(Self::Approximate),
-            v => Err(serde::de::Error::custom(format!(
-                "invalid value for timepoint: {}",
-                v
-            ))),
-        }
-    }
-}
+// TODO why does this need to throw a custom error when similar enums don't?
+// impl<'de> Deserialize<'de> for TimepointType {
+//     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+//     where
+//         D: Deserializer<'de>,
+//     {
+//         let oi: Option<i32> = Option::<i32>::deserialize(deserializer)?;
+//         match oi {
+//             Some(1) | None => Ok(Self::Exact),
+//             Some(0) => Ok(Self::Approximate),
+//             Some(i) => Err(serde::de::Error::custom(format!(
+//                 "invalid value for timepoint: {}",
+//                 i
+//             ))),
+//         }
+//     }
+// }
 
 /// Generic enum to define if a service (like wheelchair boarding) is available
 #[derive(Debug, Derivative, PartialEq, Eq, Hash, Clone, Copy)]
@@ -317,17 +314,12 @@ impl<'de> Deserialize<'de> for Availability {
     where
         D: Deserializer<'de>,
     {
-        let s: String = String::deserialize(deserializer)?;
-        Ok(match s.as_str() {
-            "" | "0" => Availability::InformationNotAvailable,
-            "1" => Availability::Available,
-            "2" => Availability::NotAvailable,
-            s => Availability::Unknown(s.parse().map_err(|_| {
-                serde::de::Error::custom(format!(
-                    "invalid value for Availability, must be an integer: {}",
-                    s
-                ))
-            })?),
+        let oi: Option<i32> = Option::<i32>::deserialize(deserializer)?;
+        Ok(match oi {
+            Some(0) | None => Availability::InformationNotAvailable,
+            Some(1) => Availability::Available,
+            Some(2) => Availability::NotAvailable,
+            Some(i) => Availability::Unknown(i),
         })
     }
 }
@@ -389,17 +381,12 @@ impl<'de> Deserialize<'de> for BikesAllowedType {
     where
         D: Deserializer<'de>,
     {
-        let s: String = String::deserialize(deserializer)?;
-        Ok(match s.as_str() {
-            "" | "0" => BikesAllowedType::NoBikeInfo,
-            "1" => BikesAllowedType::AtLeastOneBike,
-            "2" => BikesAllowedType::NoBikesAllowed,
-            s => BikesAllowedType::Unknown(s.parse().map_err(|_| {
-                serde::de::Error::custom(format!(
-                    "invalid value for BikeAllowedType, must be an integer: {}",
-                    s
-                ))
-            })?),
+        let oi: Option<i32> = Option::<i32>::deserialize(deserializer)?;
+        Ok(match oi {
+            Some(0) | None => BikesAllowedType::NoBikeInfo,
+            Some(1) => BikesAllowedType::AtLeastOneBike,
+            Some(2) => BikesAllowedType::NoBikesAllowed,
+            Some(i) => BikesAllowedType::Unknown(i),
         })
     }
 }
@@ -444,14 +431,14 @@ impl<'de> Deserialize<'de> for ExactTimes {
     where
         D: Deserializer<'de>,
     {
-        let s: String = String::deserialize(deserializer)?;
-        Ok(match s.as_str() {
-            "" | "0" => ExactTimes::FrequencyBased,
-            "1" => ExactTimes::ScheduleBased,
-            &_ => {
+        let oi: Option<i32> = Option::<i32>::deserialize(deserializer)?;
+        Ok(match oi {
+            Some(0) | None => ExactTimes::FrequencyBased,
+            Some(1) => ExactTimes::ScheduleBased,
+            Some(i) => {
                 return Err(serde::de::Error::custom(format!(
                     "Invalid value `{}`, expected 0 or 1",
-                    s
+                    i
                 )))
             }
         })
@@ -486,7 +473,9 @@ impl<'de> Deserialize<'de> for Transfers {
             Some(1) => Transfers::UniqueTransfer,
             Some(2) => Transfers::TwoTransfers,
             Some(a) => Transfers::Other(a),
-            None => Transfers::default(),
+            // TODO why use ::default()?
+            // None => Transfers::default(),
+            None => Transfers::Unlimited,
         })
     }
 }

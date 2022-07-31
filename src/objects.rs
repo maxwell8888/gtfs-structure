@@ -168,11 +168,11 @@ pub struct Stop {
     #[serde(rename = "stop_url")]
     pub url: Option<String>,
     /// Longitude of the stop
-    #[serde(deserialize_with = "de_with_optional_float")]
+    // #[serde(deserialize_with = "de_with_optional_float")]
     #[serde(rename = "stop_lon", default)]
     pub longitude: Option<f64>,
     /// Latitude of the stop
-    #[serde(deserialize_with = "de_with_optional_float")]
+    // #[serde(deserialize_with = "de_with_optional_float")]
     #[serde(rename = "stop_lat", default)]
     pub latitude: Option<f64>,
     /// Timezone of the location
@@ -219,19 +219,21 @@ pub struct RawStopTime {
     /// Arrival time of the stop time.
     /// It's an option since the intermediate stops can have have no arrival
     /// and this arrival needs to be interpolated
-    #[serde(
-        deserialize_with = "deserialize_optional_time",
-        serialize_with = "serialize_optional_time"
-    )]
-    pub arrival_time: Option<u32>,
+    // #[serde(
+    //     deserialize_with = "deserialize_optional_time",
+    //     serialize_with = "serialize_optional_time"
+    // )]
+    // pub arrival_time: Option<u32>,
+    pub arrival_time: Option<String>,
     /// Departure time of the stop time.
     /// It's an option since the intermediate stops can have have no departure
     /// and this departure needs to be interpolated
-    #[serde(
-        deserialize_with = "deserialize_optional_time",
-        serialize_with = "serialize_optional_time"
-    )]
-    pub departure_time: Option<u32>,
+    // #[serde(
+    //     deserialize_with = "deserialize_optional_time",
+    //     serialize_with = "serialize_optional_time"
+    // )]
+    // pub departure_time: Option<u32>,
+    pub departure_time: Option<String>,
     /// Identifier of the [Stop] where the vehicle stops
     pub stop_id: String,
     /// Order of stops for a particular trip. The values must increase along the trip but do not need to be consecutive
@@ -263,13 +265,15 @@ pub struct StopTime {
     /// Arrival time of the stop time.
     /// It's an option since the intermediate stops can have have no arrival
     /// and this arrival needs to be interpolated
-    pub arrival_time: Option<u32>,
+    // pub arrival_time: Option<u32>,
+    pub arrival_time: Option<String>,
     /// [Stop] where the vehicle stops
     pub stop: Arc<Stop>,
     /// Departure time of the stop time.
     /// It's an option since the intermediate stops can have have no departure
     /// and this departure needs to be interpolated
-    pub departure_time: Option<u32>,
+    // pub departure_time: Option<u32>,
+    pub departure_time: Option<String>,
     /// Indicates pickup method
     pub pickup_type: PickupDropOffType,
     /// Indicates drop off method
@@ -292,8 +296,8 @@ impl StopTime {
     /// Creates [StopTime] by linking a [RawStopTime::stop_id] to the actual [Stop]
     pub fn from(stop_time_gtfs: &RawStopTime, stop: Arc<Stop>) -> Self {
         Self {
-            arrival_time: stop_time_gtfs.arrival_time,
-            departure_time: stop_time_gtfs.departure_time,
+            arrival_time: stop_time_gtfs.arrival_time.clone(),
+            departure_time: stop_time_gtfs.departure_time.clone(),
             stop,
             pickup_type: stop_time_gtfs.pickup_type,
             drop_off_type: stop_time_gtfs.drop_off_type,
