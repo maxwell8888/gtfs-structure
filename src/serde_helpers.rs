@@ -161,7 +161,8 @@ where
 }
 
 pub fn default_route_color() -> RGB8 {
-    RGB8::new(255, 255, 255)
+    // RGB8::new(255, 255, 255)
+    RGB8::new(0, 255, 0)
 }
 
 pub fn de_with_empty_default<'de, T: Default, D>(de: D) -> Result<T, D::Error>
