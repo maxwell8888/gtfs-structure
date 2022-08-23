@@ -530,7 +530,7 @@ impl fmt::Display for Agency {
 }
 
 /// A single geographical point decribing the shape of a [Trip]. See <https://gtfs.org/reference/static/#shapestxt>
-#[derive(Debug, Serialize, Deserialize, Default)]
+#[derive(Clone, Debug, Serialize, Deserialize, Default)]
 pub struct Shape {
     /// Unique technical (not for the traveller) identifier for the Shape
     #[serde(rename = "shape_id")]
